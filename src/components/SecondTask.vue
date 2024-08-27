@@ -4,7 +4,9 @@
       return {
         dialog: false,
         jobs: ['Marketing Planner', 'UI/UX Content Planner', 'HR/Legal Manager', 'UI/UX Content Writer', 'UI/UX Designer', 'Java Spring Boot'],
-        titleJob: ''
+        titleJob: '',
+				isSelecting: false,
+				selectedFile: null
       }
     },
 
@@ -14,7 +16,23 @@
         this.titleJob = title;
         console.log(this.titleJob);
         
-      }
+      },
+			handleFileImport() {
+				this.isSelecting = true;
+
+				// After obtaining the focus when closing the FilePicker, return the button state to normal
+				window.addEventListener('focus', () => {
+						this.isSelecting = false
+				}, { once: true });
+				
+				// Trigger click on the FileInput
+				this.$refs.uploader.click();
+			},
+			onFileChanged(e) {
+				this.selectedFile = e.target.files[0];
+
+				// Do whatever you need with the file, liek reading it with FileReader
+			},
     }
   }
 </script>
@@ -82,9 +100,13 @@
     >
       <v-card
         width="850"
-        :title="titleJob"
         color="lime-lighten-3"
       >
+				<v-card-title
+				class="text-green-darken-2">
+					{{ titleJob }}
+				</v-card-title>
+
         <v-card-text>
           <v-row>
             <v-col
@@ -164,17 +186,35 @@
 
             <v-col
             cols="12"
-            sm="12"></v-col>
+            sm="12">
+							<v-btn 
+							prepend-icon="mdi-upload" 
+							stacked color="orange" 
+							class="text-white"
+							:loading="isSelecting" 
+							@click="handleFileImport"
+							>
+							</v-btn>
+
+							<input 
+							ref="uploader" 
+							class="d-none" 
+							type="file" 
+							@change="onFileChanged"
+							>
+						</v-col>
           </v-row>
+
+					<v-btn
+            text="Send Message"
+            @click="dialog = false"
+						color="grey"
+						class="text-white mt-2"
+          ></v-btn>
+
         </v-card-text>
 
-        <template v-slot:actions>
-          <v-btn
-            class="ms-auto"
-            text="Submit"
-            @click="dialog = false"
-          ></v-btn>
-        </template>
+        
       </v-card>
     </v-dialog>
     </v-row>
